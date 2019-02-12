@@ -17,27 +17,26 @@ from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
 
 # Suppose the input is stored in csv format just like the online dataset 
-dataframe = pandas.read_csv('input/iris.csv', header=None)
+dataframe = pandas.read_csv('input/iris.csv', header=0)
 dataset = dataframe.values
-properties = dataset[:, 0:4].astype(float) # property
-labels = dataset[:, 4] # flower label
+len_data = len(dataset[0])
+properties = dataset[:, 0:len_data-1].astype(float) # property
+labels = dataset[:, len_data-1] # label
 
 # one-hot encoding for labels 
 encoder = LabelEncoder()
 encoder.fit(labels)
 encoder_label = encoder.transform(labels)
-print(encoder_label)
 
 # 0 ==> [1,0,0] 1 ==> [0,1,0] 2==> [0,0,1]
 one_hot_label = np_utils.to_categorical(encoder_label)
-# print(one_hot_label)
 
 # Use simply fully connected feedforward neural network
 def fully_connected_model():
     # create model
     model = Sequential()
     # build layers 
-    model.add(Dense(8, input_dim=4, activation='relu'))
+    model.add(Dense(8, input_dim=len_data-1, activation='relu'))
     model.add(Dense(3, activation='softmax')) # use softmax to represent predicted probability
     # compile model
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
