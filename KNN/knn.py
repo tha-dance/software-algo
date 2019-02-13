@@ -9,13 +9,14 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 
 iris = load_iris()
+print(iris)
 
 # iris contains the columns of its features and also columns of its target
-print(iris.data)
-print(iris.target)
+data_len = iris.data.shape[0]
+X = iris.data[0:int(0.8 * data_len),:]
+y = iris.target[0:int(0.8 * data_len)]
 
-X = iris.data
-y = iris.target
+print(y.shape)
 
 feature_train, feature_test, label_train, label_test = train_test_split(X, y, test_size=0.2, random_state=4)
 
@@ -38,9 +39,33 @@ k_range = range(1, 27)
 plt.plot(k_range, scores_list)
 plt.xlabel('Value of K for this KNN')
 plt.ylabel('Accuracy for testing dataset')
-plt.show()
+# plt.show(block=False)
 
 # TODO: choose the best K from the dataset 
 # and use that to predict test dataset and get the final accuracy
+max = 0
+for i in range(len(scores_list)):
+    if scores_list[max] > scores_list[i]:
+        max = i
 
+print('optimal is : ' + str(max))
 
+knn = KNeighborsClassifier(n_neighbors=i)
+knn.fit(X, y)
+
+X_unseen = iris.data[int(0.8*data_len)+1:, :]
+y_unseen = iris.target[int(0.8*data_len)+1:]
+
+y_predict = knn.predict(X_unseen)
+
+score = metrics.accuracy_score(y_unseen, y_predict)
+print('score : %f%%' % score)
+count = 0
+correct = 0
+for i in range(len(y_predict)): 
+    if y_predict[i] == y_unseen[i]:
+        correct += 1
+    count += 1
+print(count)
+print(correct)
+print('Accuracy %.2f%%' % (correct * 100 / count))
