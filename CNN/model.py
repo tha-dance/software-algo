@@ -1,6 +1,7 @@
 # This program is used to build the basic model structure
 # This program refers to some ideas from 
 # https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
+# Data is fetched from: http://archive.ics.uci.edu/ml/machine-learning-databases/iris/
 
 import numpy as np 
 import pandas
