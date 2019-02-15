@@ -13,17 +13,17 @@ print(iris)
 
 # iris contains the columns of its features and also columns of its target
 data_len = iris.data.shape[0]
-X = iris.data[0:int(0.8 * data_len),:]
-y = iris.target[0:int(0.8 * data_len)]
+X = iris.data
+y = iris.target
 
-print(y.shape)
+# print(y.shape)
 
 feature_train, feature_test, label_train, label_test = train_test_split(X, y, test_size=0.2, random_state=4)
 
-print(feature_train.shape)
-print(feature_test.shape)
-print(label_train.shape)
-print(label_test.shape)
+# print(feature_train.shape)
+# print(feature_test.shape)
+# print(label_train.shape)
+# print(label_test.shape)
 
 k_limit = 27
 scores_list = []
@@ -51,19 +51,19 @@ for i in range(len(scores_list)):
 print('optimal is : ' + str(max))
 
 knn = KNeighborsClassifier(n_neighbors=i)
-knn.fit(X, y)
+knn.fit(feature_train, label_train)
 
-X_unseen = iris.data[int(0.8*data_len)+1:, :]
-y_unseen = iris.target[int(0.8*data_len)+1:]
+# X_unseen = iris.data[int(0.8*data_len)+1:, :]
+# y_unseen = iris.target[int(0.8*data_len)+1:]
 
-y_predict = knn.predict(X_unseen)
+y_predict = knn.predict(feature_test)
 
-score = metrics.accuracy_score(y_unseen, y_predict)
-print('score : %f%%' % score)
+score = metrics.accuracy_score(label_test, y_predict)
+print('score : %f%%' % (score*100))
 count = 0
 correct = 0
 for i in range(len(y_predict)): 
-    if y_predict[i] == y_unseen[i]:
+    if y_predict[i] == label_test[i]:
         correct += 1
     count += 1
 print(count)
