@@ -16,6 +16,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import confusion_matrix
 
 # Suppose the input is stored in csv format just like the online dataset 
 dataframe = pandas.read_csv('input/iris.csv', header=0)
@@ -46,12 +47,22 @@ def fully_connected_model():
 
 estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=5, verbose=0)
 
-seed = 11
-np.random.seed(seed)
+# Confusion matrix as the evaluation method
+estimator.fit(properties, labels)
+labels_pred = estimator.predict(properties)
+result = confusion_matrix(labels, labels_pred)
 
-kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
-results = cross_val_score(estimator, properties, one_hot_label, cv=kfold)
+print(result) 
+# the testing result :
+# [[49  0  0]
+#  [ 0 46  4]
+#  [ 0  1 49]]
 
-print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+# Another evaluation method ==> accuracy score
+# seed = 11
+# np.random.seed(seed)
 
+# kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
+# results = cross_val_score(estimator, properties, one_hot_label, cv=kfold)
 
+# print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
