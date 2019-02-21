@@ -26,12 +26,12 @@ properties = dataset[:, 0:len_data-1].astype(float) # property
 labels = dataset[:, len_data-1] # label
 
 # one-hot encoding for labels 
-encoder = LabelEncoder()
-encoder.fit(labels)
-encoder_label = encoder.transform(labels)
+# encoder = LabelEncoder()
+# encoder.fit(labels)
+# encoder_label = encoder.transform(labels)
 
 # 0 ==> [1,0,0] 1 ==> [0,1,0] 2==> [0,0,1]
-one_hot_label = np_utils.to_categorical(encoder_label)
+# one_hot_label = np_utils.to_categorical(encoder_label)
 
 # Use simply fully connected feedforward neural network
 def fully_connected_model():
@@ -47,7 +47,7 @@ def fully_connected_model():
 
 estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=5, verbose=0)
 
-# Confusion matrix as the evaluation method
+# Confusion matrix as the evaluation method 
 estimator.fit(properties, labels)
 labels_pred = estimator.predict(properties)
 result = confusion_matrix(labels, labels_pred)
