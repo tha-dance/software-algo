@@ -11,12 +11,14 @@ import pandas
 
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.models import load_model
 from keras.utils import np_utils
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
+from sklearn import cross_validation
 
 # Suppose the input is stored in csv format just like the online dataset 
 dataframe = pandas.read_csv('input/iris.csv', header=0)
@@ -24,6 +26,8 @@ dataset = dataframe.values
 len_data = len(dataset[0])
 properties = dataset[:, 0:len_data-1].astype(float) # property
 labels = dataset[:, len_data-1] # label
+
+feature_train, feature_test, labels_train, labels_test = cross_validation.train_test_split(properties, labels, test_size=0.2, random_state=4)
 
 # one-hot encoding for labels 
 # encoder = LabelEncoder()
@@ -51,6 +55,11 @@ estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_si
 estimator.fit(properties, labels)
 labels_pred = estimator.predict(properties)
 result = confusion_matrix(labels, labels_pred)
+model = fully_connected_model()
+model.save("result/model.h5")
+print('Model saved to disk. ')
+
+load_model('result/model.h5')
 
 print(result) 
 # the testing result :

@@ -11,9 +11,11 @@ len_data = len(dataset[0])
 properties = dataset[:, 0:len_data-1].astype(float) # property
 labels = dataset[:, len_data-1] # label
 
-properties_train, properties_test, labels_train, labels_test = train_test_split(properties, labels, test_size=0.2, random_state=4)
+properties_train, properties_test, labels_train, labels_test = train_test_split(properties, labels, test_size=0.4, random_state=4)
 
-rf = RandomForestClassifier(n_estimators=100) # the parameter n_estimators defines the number of trees in the forest 
+rf = RandomForestClassifier(n_estimators=100) 
+# the parameter n_estimators defines the number of trees in the forest 
+# default number of n_estimators is 100
 
 rf.fit(properties_train, labels_train)
 labels_pred = rf.predict(properties_test)
