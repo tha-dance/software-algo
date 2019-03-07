@@ -1,5 +1,7 @@
 '''
 Single label multi-class classification 
+
+This model run through the 
 '''
 import pandas
 
@@ -9,7 +11,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
 from keras.models import load_model
-from keras.utils import np_utils
+from keras.utils import np_utils, to_categorical
 from keras.optimizers import Adam
 from keras.layers.core import Activation
 from keras.layers.core import Dropout
@@ -43,7 +45,13 @@ def convolutional_model(width, height, depth, finalAct='softmax'):
 
     # Add two more set of layers from above architecture
 
+    return model
+
 height = 28
 width = 28
 depth = 1
 model = convolutional_model(width, height, depth)
+
+# Besides csv file, pandas.read_csv can also read txt file 
+dataframe = pandas.read_csv('input/iris.csv', header=0)
+
