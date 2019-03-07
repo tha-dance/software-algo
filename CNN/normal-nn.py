@@ -1,8 +1,15 @@
-# This program is used to build the basic model structure
-# This program refers to some ideas from 
-# https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
-# Data is fetched from: http://archive.ics.uci.edu/ml/machine-learning-databases/iris/
+'''
+    This program is used to build the basic model structure
+    This program refers to some ideas from 
+    https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
+    Data is fetched from: http://archive.ics.uci.edu/ml/machine-learning-databases/iris/
+'''
 
+'''
+TODO:
+1. use one-hot encoding 
+2. use k-fold
+'''
 import numpy as np 
 import pandas
 
@@ -19,30 +26,30 @@ from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
 from sklearn import cross_validation
+from sklearn import datasets
 
 # Suppose the input is stored in csv format just like the online dataset 
 dataframe = pandas.read_csv('input/iris.csv', header=0)
 dataset = dataframe.values
+label_names = datasets.load_iris().target_names
 len_data = len(dataset[0])
-properties = dataset[:, 0:len_data-1].astype(float) # property
-labels = dataset[:, len_data-1] # label
-
-feature_train, feature_test, labels_train, labels_test = cross_validation.train_test_split(properties, labels, test_size=0.2, random_state=4)
+feature = dataset[:, 0:len_data-1].astype(float) # property
+label = dataset[:, len_data-1] # label
 
 '''
-The reason that I convert numerical data then to one hot encoding is that 
-using numerical data may result in making model assume a natural ordering between categories
-like category 1 data will be in front of category 2 data 
-which will result in poor performance
+    The reason that I convert numerical data then to one hot encoding is that 
+    using numerical data may result in making model assume a natural ordering between categories
+    like category 1 data will be in front of category 2 data 
+    which will result in poor performance
 '''
-
 # one-hot encoding for labels 
-# encoder = LabelEncoder()
-# encoder.fit(labels)
-# encoder_label = encoder.transform(labels)
-
+encoder = LabelEncoder()
+encoder.fit(label)
+encoder_label = encoder.transform(label)
 # 0 ==> [1,0,0] 1 ==> [0,1,0] 2==> [0,0,1]
-# one_hot_label = np_utils.to_categorical(encoder_label)
+one_hot_label = np_utils.to_categorical(encoder_label)
+
+feature_train, feature_test, label_train, label_test = cross_validation.train_test_split(feature, label, test_size=0.2, random_state=4)
 
 # Use simply fully connected feedforward neural network
 def fully_connected_model():
@@ -59,27 +66,45 @@ def fully_connected_model():
 estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=5, verbose=0)
 
 # Confusion matrix as the evaluation method 
-estimator.fit(properties, labels)
-labels_pred = estimator.predict(properties)
-result = confusion_matrix(labels, labels_pred)
+estimator.fit(feature_train, label_train)
+label_pred = estimator.predict(feature_test)
+
+# Use K-Fold validation
+# Another evaluation method ==> accuracy score
+seed = 11
+np.random.seed(seed)
+
+kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
+results = cross_val_score(estimator, feature, one_hot_label, cv=kfold)
+
+print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+
+result = confusion_matrix(label_test, label_pred)
+# the testing result :
+# [[17  0  0]
+#  [ 0  5  1]
+#  [ 0  0  7]]
+
+one_line_label_pred = estimator.predict(feature_test[0:1])
+print(one_line_label_pred)
+
+one_line_result = confusion_matrix(label_test[0:1], one_line_label_pred)
+print(one_line_result)
+
 model = fully_connected_model()
-model.save("result/model.h5")
+print(model)
+
+model.save("model/normal_nn.h5")
 print('Model saved to disk. ')
 
-model = load_model('result/model.h5')
+# For actual classification scenario, the model will be loaded and used directly 
+loaded_model = load_model('model/normal_nn.h5')
+loaded_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+loaded_labels_pred = loaded_model.predict_classes(feature_test)
+# print(label_test)
+# print(loaded_labels_pred)
+# for label in loaded_labels_pred:
+#     print(label_names[label])
 
-print(result) 
-print(model)
-# the testing result :
-# [[49  0  0]
-#  [ 0 46  4]
-#  [ 0  1 49]]
 
-# Another evaluation method ==> accuracy score
-# seed = 11
-# np.random.seed(seed)
 
-# kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
-# results = cross_val_score(estimator, properties, one_hot_label, cv=kfold)
-
-# print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
