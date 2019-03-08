@@ -55,3 +55,21 @@ model = convolutional_model(width, height, depth)
 # Besides csv file, pandas.read_csv can also read txt file 
 dataframe = pandas.read_csv('input/iris.csv', header=0)
 
+estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=5, verbose=0)
+
+# Confusion matrix as the evaluation method 
+estimator.fit(feature_train, label_train)
+label_pred = estimator.predict(feature_test)
+
+# Use K-Fold validation
+# Another evaluation method ==> accuracy score
+seed = 11
+np.random.seed(seed)
+
+kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
+results = cross_val_score(estimator, feature, one_hot_label, cv=kfold)
+
+print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+
+result = confusion_matrix(label_test, label_pred)
+
