@@ -26,14 +26,17 @@ from keras.backend import manual_variable_initialization
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn import cross_validation
 from sklearn import datasets
+# from sklearn.datasets import load_iris
 
 # Suppose the input is stored in csv format just like the online dataset 
-dataframe = pandas.read_csv('input/iris.csv', header=0)
+dataframe = pandas.read_csv('input/HARDataset/hard.csv', header=0)
+# dataframe = datasets.load_iris()
 dataset = dataframe.values
-label_names = datasets.load_iris().target_names
+# label_names = dataframe.target_names
+# label_names = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
 
 len_data = len(dataset[0])
 feature = dataset[:, 0:len_data-1].astype(float) # property
@@ -60,15 +63,21 @@ def fully_connected_model():
     model = Sequential()
     # build layers 
     model.add(Dense(8, input_dim=len_data-1, activation='relu'))
-    model.add(Dense(3, activation='softmax')) # use softmax to represent predicted probability
+    model.add(Dense(32, input_dim=8, activation='relu'))
+    
+    # Here the number of neurons is number of classes
+    model.add(Dense(6, activation='softmax')) # use softmax to represent predicted probability
+
 
     # If the effect is not so good, add more hidden layers to increase the accuracy level
+    
     # compile model
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     
     return model
 
-estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=119, verbose=0)
+# For optimization, can also adjust the value of epochs or batch_size 
+estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=10, verbose=0)
 
 # Confusion matrix as the evaluation method 
 model = fully_connected_model()
@@ -78,18 +87,18 @@ print(feature_train.shape)
 # print(label_pred)
 estimator.fit(feature_train, label_train)
 label_pred = estimator.predict(feature_test)
-print(label_test)
-print(label_pred)
+# print(label_test)
+# print(label_pred)
 
 # Use K-Fold validation
 # Another evaluation method ==> accuracy score
 seed = 11
 np.random.seed(seed)
 
-kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
-results = cross_val_score(estimator, feature, one_hot_label, cv=kfold)
+# kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
+# results = cross_val_score(estimator, feature, one_hot_label, cv=kfold)
 
-print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+# print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
 # model.fit(feature_train, label_train, epochs=200, batch_size=5, verbose=0)
 model = estimator.model
@@ -98,8 +107,9 @@ print(label_test)
 print(model_label_pred)
 
 
-result = confusion_matrix(label_test, label_pred)
+result = confusion_matrix(label_test, model_label_pred)
 print(result)
+print(accuracy_score(label_test, model_label_pred))
 # the testing result :
 # [[17  0  0]
 #  [ 0  5  1]
@@ -111,9 +121,8 @@ print(one_line_label_pred)
 one_line_result = confusion_matrix(label_test[0:1], one_line_label_pred)
 print(one_line_result)
 
-model = fully_connected_model()
 weights = model.get_weights()
-print(weights)
+# print(weights)
 
 manual_variable_initialization(True)
 
@@ -131,15 +140,31 @@ loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 loaded_model.load_weights("model/weights.h5")
-print(loaded_model.get_weights())
-loaded_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+# print(loaded_model.get_weights())
+print('Model loaded from disk. ')
+# loaded_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 loaded_labels_pred = loaded_model.predict_classes(feature_test)
-# print(label_test)
+
+for label in label_test:
+    label = int(label)
+print(label_test)
+# loaded_labels_pred_str = []
 # print(loaded_labels_pred)
 # for label in loaded_labels_pred:
-#     print(label_names[label])
+#     loaded_labels_pred_str.append(label_names[label])
 
-print(loaded_model.get_weights())
+label_names = [1, 2, 3, 4, 5, 6]
+loaded_labels_pred_name = []
+
+for label_index in loaded_labels_pred:
+    loaded_labels_pred_name.append(label_names[label_index])
+
+print(loaded_labels_pred)
+result = confusion_matrix(label_test, loaded_labels_pred_name)
+print(result)
+print(accuracy_score(label_test, loaded_labels_pred_name))
+
+# print(loaded_model.get_weights())
 
 
 
