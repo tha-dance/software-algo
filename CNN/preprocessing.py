@@ -9,7 +9,7 @@ The features that we would like to extract are
 6. Skewness along the x, y, z axes
 '''
 import numpy as np 
-import pandas
+# import pandas
 
 # suppose there are a sequence of data fetched from sensor
 input =  [[0, 0, 0, 0, 0, 0, 0, 0, 0,], 
@@ -19,6 +19,10 @@ input =  [[0, 0, 0, 0, 0, 0, 0, 0, 0,],
           [0, 0, 0, 0, 0, 0, 0, 0, 0,], 
           [0, 0, 0, 0, 0, 0, 0, 0, 0,], 
           [0, 0, 0, 0, 0, 0, 0, 0, 0,]]
+
+# It will form a 1D array with all the features for all 9 accelerations 
+res = np.max(input[:, 0])
+print(res)
 
 
 
