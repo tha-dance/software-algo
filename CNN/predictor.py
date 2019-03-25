@@ -5,6 +5,7 @@ import pandas
 from keras.models import model_from_json
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
+from feature_extraction import extract
 
 json_file = open("model/nn_structure.json")
 loaded_model_json = json_file.read()
@@ -19,7 +20,7 @@ dataset = dataframe.values
 len_data = len(dataset[0])
 feature = dataset[:, 0:len_data-1].astype(float)
 label = dataset[:, len_data-1]
-label_names = [1,2,3,4,5,6]
+label_names = [1,2,3,4,5]
 
 feature_train, feature_test, label_train, label_test = cross_validation.train_test_split(feature, label, test_size=0.2, random_state=4)
 
@@ -32,3 +33,9 @@ matrix = confusion_matrix(label_pred, label_test)
 accur = accuracy_score(label_pred, label_test)
 print(matrix)
 print(accur)
+
+input = extract(feature_test)
+print(input)
+class_index = loaded_model.predict_classes(feature_test[0:1])
+print(class_index) # the predicted output is an array
+print(label_test[0:1], label_names[class_index[0]])

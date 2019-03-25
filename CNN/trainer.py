@@ -13,7 +13,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
 
-dataframe = pandas.read_csv('input/HARDataset/hard.csv', header=0)
+dataframe = pandas.read_csv('processed.csv', header=0)
 dataset = dataframe.values
 
 len_data = len(dataset[0])
@@ -31,7 +31,7 @@ def fully_connected_model():
     model.add(Dense(32, input_dim=8, activation='relu'))
 
     # The number of neurons in the last layer == number of classes 
-    model.add(Dense(6, activation='softmax')) # use softmax to represented predicted probabilty
+    model.add(Dense(5, activation='softmax')) # use softmax to represented predicted probabilty
 
     # compile model
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -44,7 +44,7 @@ estimator.fit(feature_train, label_train)
 model = estimator.model
 label_pred_index = model.predict_classes(feature_test)
 print(label_pred_index)
-label_names = [1,2,3,4,5,6]
+label_names = [1,2,3,4,5]
 label_pred = []
 for index in label_pred_index:
     label_pred.append(label_names[index])
