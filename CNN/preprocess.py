@@ -13,8 +13,8 @@ for csv_file in dir:
     dataframe = pd.read_csv(os.path.join('Datasets_new', csv_file))
     dataset = dataframe.values
     print(dataset)
-    for row in range(len(dataset) - window_size):
-        processed = extract(dataset[row:row+window_size])
+    for row in range(int((len(dataset) - window_size) / step_size)):
+        processed = extract(dataset[row*step_size:row*step_size+window_size])
         processed.append(dataset[row][-1])
         # print(processed)
         result.append(processed)
