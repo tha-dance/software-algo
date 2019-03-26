@@ -6,6 +6,7 @@ from keras.models import model_from_json
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
 from feature_extraction import extract
+from sklearn import preprocessing
 
 json_file = open("model/nn_structure.json")
 loaded_model_json = json_file.read()
@@ -15,12 +16,13 @@ loaded_model.load_weights("model/weights.h5")
 
 print('Model loaded from disk. ')
 
-dataframe = pandas.read_csv('input/HARDataset/hard.csv', header=0)
+dataframe = pandas.read_csv('processed.csv', header=0)
 dataset = dataframe.values
 len_data = len(dataset[0])
-feature = dataset[:, 0:len_data-1].astype(float)
-label = dataset[:, len_data-1]
+feature = dataset[1:, 1:len_data-1].astype(float)
+label = dataset[1:, len_data-1]
 label_names = [1,2,3,4,5]
+feature = preprocessing.normalize(feature)
 
 feature_train, feature_test, label_train, label_test = cross_validation.train_test_split(feature, label, test_size=0.2, random_state=4)
 
