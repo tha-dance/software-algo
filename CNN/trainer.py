@@ -3,6 +3,7 @@ This will be the program to train the model during training scenario
 '''
 
 import pandas
+import numpy as np
 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -13,13 +14,14 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn import cross_validation, preprocessing
 from sklearn.metrics import confusion_matrix, accuracy_score
 from keras.optimizers import SGD, Adam
+from sklearn.model_selection import cross_val_score, KFold
 
 dataframe = pandas.read_csv('processed.csv', header=0)
 dataset = dataframe.values
 
 len_data = len(dataset[0])
-feature = dataset[1:, 1:len_data-1].astype(float)
-label = dataset[1:, len_data-1].astype(int)
+feature = dataset[:, 1:len_data-1].astype(float)
+label = dataset[:, len_data-1].astype(int)
 feature = preprocessing.normalize(feature)
 # label = preprocessing.normalize(label)
 
@@ -49,6 +51,11 @@ print(feature_train)
 print(label_train)
 estimator = KerasClassifier(build_fn=fully_connected_model, epochs=200, batch_size=200, verbose=1)
 estimator.fit(feature_train, label_train)
+
+seed = 11
+np.random.seed(seed)
+kfold = KFold(n_splits=10, shuffle=True, random_state=seed) 
+results = cross_val_score(estimator, feature, label, cv=kfold)
 
 model = estimator.model
 label_pred_index = model.predict_classes(feature_test)
