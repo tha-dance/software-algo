@@ -16,13 +16,14 @@ loaded_model.load_weights("model/weights.h5")
 
 print('Model loaded from disk. ')
 
-dataframe = pandas.read_csv('raffles.txt', header=None, delim_whitespace=True)
+# dataframe = pandas.read_csv('raffles.txt', header=None, delim_whitespace=True)
+dataframe = pandas.read_csv('processed_test.csv', header=0)
 dataset = dataframe.values
 len_data = len(dataset[0])
 print(len_data)
 # feature = dataset[0:, 1:len_data-1].astype(float)
-feature = dataset
-# label = dataset[0:, len_data-1]
+feature = dataset[:, :len_data-1]
+label = dataset[:, len_data-1]
 label_names = [1,2,3,4,5]
 # print(feature)
 feature = preprocessing.normalize(feature)
@@ -34,10 +35,10 @@ print(feature.shape)
 label_pred_index = loaded_model.predict_classes(feature)
 # print(label_pred_index)
 label_pred = []
-label = []
+# label = []
 for index in label_pred_index:
     label_pred.append(label_names[index])
-    label.append(1)
+    # label.append(1)
 # print(label.shape)
 print(label_pred)
 

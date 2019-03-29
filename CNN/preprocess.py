@@ -6,11 +6,12 @@ from feature_extraction import extract
 window_size = 250
 step_size = 10
 
-dir = os.listdir('Datasets_new/')
+dir_path = 'Datasets_test/'
+dir = os.listdir(dir_path)
 result = []
 print(dir)
 for csv_file in dir:
-    dataframe = pd.read_csv(os.path.join('Datasets_new', csv_file))
+    dataframe = pd.read_csv(os.path.join(dir_path, csv_file))
     dataset = dataframe.values
     print(dataset)
     for row in range(int((len(dataset) - window_size) / step_size)):
@@ -20,4 +21,4 @@ for csv_file in dir:
         result.append(processed)
 
 df = pd.DataFrame(result)
-df.to_csv('processed.csv', header=0)
+df.to_csv('processed_test.csv', header=0, index=False)
