@@ -4,6 +4,7 @@ This will be the program to train the model during training scenario
 
 import pandas
 import numpy as np
+import pickle
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
@@ -12,6 +13,7 @@ from keras.models import model_from_json
 from keras.utils import np_utils, to_categorical
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn import cross_validation, preprocessing
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
 from keras.optimizers import SGD, Adam
 from sklearn.model_selection import cross_val_score, StratifiedKFold
@@ -24,9 +26,7 @@ label_reference = [1,2,3,4,5]
 len_data = len(dataset[0])
 feature = dataset[:, 0:len_data-1].astype(float)
 label = dataset[:, len_data-1].astype(int)
-scaler = preprocessing.StandardScaler()
-scaler.fit(feature)
-feature = scaler.transform(feature)
+feature = preprocessing.normalize(feature)
 # label = preprocessing.normalize(label)
 
 feature_train, feature_test, label_train, label_test = cross_validation.train_test_split(feature, label, test_size=0.2, random_state=4)
@@ -75,10 +75,13 @@ different techniques to avoid overfitting issues
 # kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=seed) 
 # results = cross_val_score(estimator, feature, label, cv=kfold)
 
+estimator = MLPClassifier(hidden_layer_sizes=(32,32,32))
+estimator.fit(feature_train, label_train)
+
 # model = estimator.model
-model = fully_connected_model(len_data-1, len(label_reference)+1)
-model.fit(feature_train, label_train, epochs=200, batch_size=100, verbose=1)
-label_pred_index = model.predict_classes(feature_test)
+# model = fully_connected_model(len_data-1, len(label_reference)+1)
+# model.fit(feature_train, label_train, epochs=200, batch_size=100, verbose=1)
+label_pred_index = estimator.predict(feature_test)
 print(label_pred_index)
 print(max(label_pred_index))
 label_names = [0,1,2,3,4,5]
@@ -91,9 +94,11 @@ accuracy = accuracy_score(label_test, label_pred)
 print(matrix)
 print(accuracy)
 
-model_json = model.to_json()
-with open('model/nn_structure.json', 'w') as f:
-    f.write(model_json)
-model.save_weights("model/weights.h5")
-print('Model saved to disk. ')
+# model_json = model.to_json()
+# with open('model/nn_structure.json', 'w') as f:
+#     f.write(model_json)
+# model.save_weights("model/weights.h5")
+# print('Model saved to disk. ')
 
+with open('model/new_model', 'wb') as f:
+    pickle.dump(estimator, f)
