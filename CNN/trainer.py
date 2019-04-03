@@ -24,6 +24,9 @@ label_reference = [1,2,3,4,5]
 len_data = len(dataset[0])
 feature = dataset[:, 0:len_data-1].astype(float)
 label = dataset[:, len_data-1].astype(int)
+
+# The key is the scaler, previously the preprocessing.normalize() scale the values too low 
+# and the model cannot detect the difference between different values. Hence cannot get effective prediction 
 scaler = preprocessing.StandardScaler()
 scaler.fit(feature)
 feature = scaler.transform(feature)
