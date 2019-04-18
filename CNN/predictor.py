@@ -5,14 +5,18 @@ import pandas
 from keras.models import model_from_json
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
-from feature_extraction import extract
 from sklearn import preprocessing
+import pickle
+from sklearn.externals import joblib
 
-json_file = open("model/nn_structure.json")
-loaded_model_json = json_file.read()
-json_file.close()
-loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights("model/weights.h5")
+# json_file = open("model/nn_structure.json")
+# loaded_model_json = json_file.read()
+# json_file.close()
+# loaded_model = model_from_json(loaded_model_json)
+# loaded_model.load_weights("model/weights.h5")
+
+# loaded_model = pickle.load(open('model/pickle_saved.pickle', 'rb'))
+loaded_model = joblib.load('model/model_df.joblib')
 
 print('Model loaded from disk. ')
 
@@ -22,13 +26,15 @@ dataset = dataframe.values
 len_data = len(dataset[0])
 print(len_data)
 # feature = dataset[0:, 1:len_data-1].astype(float)
-feature = dataset[:, :len_data-1]
-label = dataset[:, len_data-1]
-label_names = [0,1,2,3,4,5]
+feature = dataset[:, :len_data-1].astype(float)
+label = dataset[:, len_data-1].astype(int)
+label_names = [1,2,3,4,5,6,7,8,9,10,11]
 # print(feature)
 # feature = preprocessing.normalize(feature)
-scaler = preprocessing.StandardScaler()
-scaler.fit(feature)
+# scaler = preprocessing.StandardScaler()
+# scaler.fit(feature)
+# scaler = pickle.load(open('model/scaler.pickle', 'rb'))
+scaler = joblib.load('model/scaler_df.joblib')
 feature = scaler.transform(feature)
 print(feature.shape)
 
