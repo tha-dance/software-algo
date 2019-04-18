@@ -25,6 +25,10 @@ len_data = len(dataset[0])
 feature = dataset[:, 0:len_data-1].astype(float)
 label = dataset[:, len_data-1].astype(int)
 
+NUM_FEATURE = len_data-1
+print('num of feature is ' + str(NUM_FEATURE))
+NUM_LABEL = len(label_reference)+1
+
 # The key is the scaler, previously the preprocessing.normalize() scale the values too low 
 # and the model cannot detect the difference between different values. Hence cannot get effective prediction 
 scaler = preprocessing.StandardScaler()
@@ -59,7 +63,7 @@ def fully_connected_model():
     model.add(Dropout(0.25))
 
     # The number of neurons in the last layer == number of classes 
-    model.add(Dense(10, activation='softmax')) # use softmax to represented predicted probabilty
+    model.add(Dense(NUM_LABEL, activation='softmax')) # use softmax to represented predicted probabilty
 
     # compile model
     opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
