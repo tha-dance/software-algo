@@ -53,13 +53,10 @@ def fully_connected_model():
     # build layers
     # Try dropout rate for 0.1, 0.2 and 0.4
     model.add(Dense(64, input_dim=NUM_FEATURE, activation='relu'))
-    model.add(Dropout(0.2))
     model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.2))
     model.add(Dense(64, activation='relu'))
-    model.add(Dropout(0.2))
     model.add(Dense(32, activation='relu'))
-    # model.add(Dropout(0.25))
+    model.add(Dropout(0.25))
 
     # The number of neurons in the last layer == number of classes 
     model.add(Dense(NUM_LABEL, activation='softmax')) # use softmax to represented predicted probabilty
